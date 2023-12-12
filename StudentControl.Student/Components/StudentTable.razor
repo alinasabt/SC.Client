@@ -1,0 +1,64 @@
+﻿
+@using StudentControl.Domain.Model;
+@using StudentControl.DTO;
+@using AutoMapper;
+@inject HttpClient Http;
+@inject IMapper Mapper;
+@inject NavigationManager NavigationManager;
+
+@if (SortedStudentList != null)
+{
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Number</th><th>Name</th><th>Surname</th><th>Middle Name</th><th>Status</th><th>Graduate</th><th></th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < SortedStudentList.Count; i++)
+                {
+                    var Student = SortedStudentList[i];
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@Student.Name</td>
+                        <td>@Student.Surname</td>
+                        <td>@Student.Middle_name</td>
+                        <td>@Student.Status</td>
+                        <td>@Student.Graduate</td>
+                        <td><button @onclick ="@(e => Redact(Student.Id))" class ="RedactButton">Redact</button></td>
+                        <td><button @onclick ="@(e => Delete(Student.Id, Student))" class = "DeleteButton">Delete</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+@code {
+    [Parameter]
+    public List<StudentDTO>? SortedStudentList { get; set; }
+
+
+
+    async void Delete(Guid id, StudentDTO CurrentStudent)
+    {
+        try
+        {
+            var Result = await Http.DeleteAsync($"http://localhost:5232/api/Student/{id}/Delete");
+            SortedStudentList.Remove(CurrentStudent);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    void Redact(Guid id)
+    {
+        NavigationManager.NavigateTo($"/Student/{id}");
+    }
+}

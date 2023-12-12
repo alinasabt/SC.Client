@@ -1,0 +1,129 @@
+﻿@page "/Students/"
+@using StudentControl.Domain.Model;
+@using StudentControl.DTO;
+@using AutoMapper;
+@using System.Net.Http.Json;
+@using System.Threading.Tasks;
+@using Microsoft.AspNetCore.Components.Web;
+@using Newtonsoft.Json;
+@using StudentControl.Student.Components
+@using StudentControl.Student.Pages;
+@using StudentControl.Student.Shared;
+@inject HttpClient Http;
+@inject IMapper Mapper;
+@inject NavigationManager NavigationManager
+
+<PageTitle>Students</PageTitle>
+<div>
+    <p>Students: Total:@Total Filtered:@Filtered</p>
+</div>
+
+<div>
+    <table>
+    <tr>
+        <td>
+            <label class="text-field__label" for="TextName">Name</label>
+            <input id = "TextName" class="text-field__input" type="text" @bind-value="@Filter.Name" >Name</input>
+        </td>
+        <td>
+            <label class="text-field__label" for="TextSurname">Surname</label>
+            <input id = "TextSurname" class="text-field__input" type="text" @bind-value="@Filter.Surname" >Surname</input>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label class="text-field__label" for="TextMidName">Middle name</label>
+            <input id = "TextMidName" class="text-field__input" type="text" @bind-value="@Filter.Middle_name" ></input>
+        </td>
+        <td>
+            <label class="text-field__label" for="Graduate">Graduate</label>
+            <input id = "Graduate" class="text-field__input" type="text" @bind-value="@Filter.Graduate" ></input>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label class="text-field__label" for="Status">Status</label>
+            <select class="text-field__input" @bind = "@Filter.Status">
+                    @foreach (var Val in Enum.GetValues(typeof(Status)))
+                    {
+
+                        <option value=@Val >@Val</option>
+                    }
+            </select>
+        </td>
+    </tr>
+    </table>
+</div>
+<div align="right">
+    <button @onclick="Sort" class="RedactButton">Filtr</button>
+    <button @onclick="Reset" class="RedactButton">Reset</button>
+    <button @onclick="Update" class="RedactButton">Update</button>
+</div>
+<hr>
+
+<StudentTable SortedStudentList="@SortedStudentList"></StudentTable>
+
+@code {
+    List<StudentDTO>? StudentList = new List<StudentDTO>();
+    List<StudentDTO>? SortedStudentList;
+    StudentDTO Filter = new StudentDTO();
+    int Total = 0;
+    int Filtered = 0;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        StudentList = await Http.GetFromJsonAsync<List<StudentDTO>>("http://localhost:5232/AllStudents");
+        SortedStudentList = StudentList;
+        Total = StudentList.Count;
+
+    }
+
+    async void Update()
+    {
+        StudentList = await Http.GetFromJsonAsync<List<StudentDTO>>("http://localhost:5232/AllStudents");
+        SortedStudentList = StudentList;
+        Total = StudentList.Count;
+
+
+    }
+
+    async void Delete(Guid id)
+    {
+        try
+        {
+            var Result = await Http.DeleteAsync($"http://localhost:5232/api/Student/{id}/Delete");
+
+        }catch(Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        finally
+        {
+            Update();
+        }
+    }
+
+
+    void Sort()
+    {
+        SortedStudentList = StudentList.Where(stud => (stud.Name.Contains(Filter.Name) && stud.Surname.Contains(Filter.Surname) && 
+        (stud.Status == Filter.Status || Filter.Status == null) && (stud.Graduate == Filter.Graduate || Filter.Graduate == 0))).ToList();
+        Filtered = SortedStudentList.Count;
+
+    }
+
+    void Reset()
+    {
+        Filter = new StudentDTO();
+        Filtered = 0;
+        SortedStudentList = StudentList;
+
+    }
+    
+    void Redact(Guid id)
+    {
+        NavigationManager.NavigateTo($"/Student/{id}");
+    }
+}

@@ -1,0 +1,49 @@
+﻿.RedactButton {
+    font-size: 15px;
+    font-family: Arial;
+    width: 140px;
+    height: 50px;
+    border-width: 0px;
+    color: #ffffff;
+    border-color: #057fd0;
+    font-weight: bold;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    text-shadow: 0px -1px 0px #5b6178;
+    background: #33bdef;
+}
+
+    .RedactButton:hover {
+        background: #019ad2
+    }
+
+input {
+    border-radius: 4px;
+}
+
+.text-field {
+    margin-bottom: 1rem;
+}
+/* стили для label */
+.control-label {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+/* стили для input */
+.control-input {
+
+    height: calc(2.25rem + 2px);
+    padding: 0.375rem 0.75rem;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #bdbdbd;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
